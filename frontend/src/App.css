@@ -1,0 +1,208 @@
+#root {
+  width: 100vw;
+  height: 100vh;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  border: 2px solid rgb(200,200,200);
+  border-radius: 10px;
+  width: 80%;
+  height: 80%;
+  min-width: 80%;
+  max-width: 80%;
+  min-height: 80%;
+  max-height: 80%;
+  padding: 50px;
+  background-color: rgb(60,60,60);
+}
+
+.login-container {
+  width: 100%;
+  height: 20%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgb(200,200,200);
+}
+
+.camera-and-chat-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: stretch;
+  width: 100%;
+  border: 2px solid rgb(200,200,200);
+  height: 70%;
+  min-height: 0;
+}
+
+.overall-camera-container {
+  width: 70%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  overflow-y: auto;
+  max-height: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(200,200,200) rgb(60,60,60);
+}
+
+/* Custom scrollbar styling for webkit browsers */
+.overall-camera-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.overall-camera-container::-webkit-scrollbar-track {
+  background: rgb(60,60,60);
+  border-radius: 4px;
+}
+
+.overall-camera-container::-webkit-scrollbar-thumb {
+  background: rgb(200,200,200);
+  border-radius: 4px;
+}
+
+.overall-camera-container::-webkit-scrollbar-thumb:hover {
+  background: rgb(220,220,220);
+}
+
+.chat-container {
+  width: fit-content;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-left: 2px solid rgb(200,200,200);
+}
+
+.chat-title {
+  margin-bottom: auto;
+}
+
+.textarea-messages {
+  height: 100%;
+  margin: 50px;
+  width: 80%;
+  resize: none;
+  overflow-y: scroll;
+}
+
+.submit-message-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.submit-message-container * {
+  margin: 20px;
+}
+
+.login-container {
+  width: fit-content;
+}
+
+.login-container * {
+  text-align: center;
+}
+
+.connected-users-title {
+  /* margin-bottom: 48%; */
+}
+
+.camera-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  padding: 10px 0;
+}
+
+.camera-container > .camera-wrapper {
+  margin: 10px 0;
+  width: 100%;
+  max-width: 300px;
+}
+
+.camera-wrapper, .no-camera {
+  width: 100%;
+  height: auto;
+  box-sizing: border-box;
+}
+
+.camera-wrapper {
+  border: 3px solid rgb(200,200,200);
+  border-radius: 10px;
+  padding: 10px;
+  background-color: rgb(40,40,40);
+  transition: transform 0.2s ease;
+}
+
+.camera-wrapper:hover {
+  transform: scale(1.02);
+}
+
+.camera-wrapper img {
+  width: 100%;
+  height: auto;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 5px;
+  display: block;
+}
+
+.no-camera {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+  color: rgb(200,200,200);
+  font-style: italic;
+}
+
+.allow-disallow-camera-button {
+  margin-top: auto;
+  align-self: center;
+}
+
+.login-container > * {
+  margin: 30px;
+}
+
+.camera-controls {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.camera-controls * {
+  margin: auto 20px;
+}
+
+.other-cameras-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.other-cameras-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
