@@ -19,21 +19,24 @@ function Webcam_Component({allReceivedData, specific_username}: Camera_Component
     return (
         <div className="camera-feed">
             <h4>Camera: {specific_username}</h4>
-            {receivedData ? (
-                <img 
-                    src={receivedData} 
-                    alt={`${specific_username}'s camera`}
-                    style={{ 
-                        width: 300, 
-                        height: 300, 
-                        border: "2px solid #ccc",
-                        borderRadius: "8px"
-                    }} 
-                />
+            {receivedData !== '' ? (
+                <div className="other-client-camera-wrapper">
+                    <img 
+                        src={receivedData} 
+                        alt={`${specific_username}'s camera`}
+                        style={{
+                            width: 300,
+                            height: 300,
+                            border: "2px solid #ccc",
+                            borderRadius: "8px"
+                        }}
+                    />
+                </div>
             ) : (
-                <div style={{
-                    width: 320,
-                    height: 240,
+                <div className='no-remote-client-webcam'
+                    style={{
+                    width: 300,
+                    height: 300,
                     border: "2px solid #ccc",
                     borderRadius: "8px",
                     display: "flex",

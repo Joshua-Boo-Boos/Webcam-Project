@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import Webcam from 'react-webcam'
 import './App.css'
 import Camera_Component from './components/Camera_Component'
+import SHA512 from 'crypto-js/sha512'
 
 function App() {
 
@@ -15,11 +16,13 @@ function App() {
   const ws = useRef<WebSocket | null>(null);
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
   const [allReceivedData, setAllReceivedData] = useState<{data: string; username: string}[]>([]);
+  const [chatInput, setChatInput] = useState<string>('');
+  const [chatMessages, setChatMessages] = useState<string[]>([]);
 
   useEffect(() => {
     if (loggedIn && username && !ws.current) {
       try {
-        ws.current = new WebSocket('wss://192.168.1.210:8001/ws/' + username);
+        ws.current = new WebSocket('wss://192.168.1.210:8000/ws/' + username);
       } catch (error) {
         console.error('Error occurred while creating WebSocket:', error);
       }
@@ -53,6 +56,9 @@ function App() {
               console.log('arrayToReturn:', arrayToReturn);
               return arrayToReturn;
             });
+          } else if (message.type === 'chat_message') {
+            console.log('Received chat message:', message);
+            setChatMessages(chatMessages => [...chatMessages, `${message.username}: ${message.content}`]);
           }
         }
       }
@@ -61,13 +67,13 @@ function App() {
 
   const login = async () => {
     try {
-      const loginAPIURL = 'https://192.168.1.210:8001/api/login';
+      const loginAPIURL = 'https://192.168.1.210:8000/api/login';
       const response = await fetch(loginAPIURL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({username: inputUsername, password: inputPassword})
+        body: JSON.stringify({username: SHA512(inputUsername).toString(), password: SHA512(inputPassword).toString()})
       });
       if (!response.ok) {
         throw new Error('Login failed');
@@ -95,6 +101,18 @@ function App() {
     setUsername('');
     setAllReceivedData([]);
     setOnlineUsers([]);
+  }
+
+  const submitChatMessage = () => {
+    if (ws.current && ws.current.readyState === WebSocket.OPEN && loggedIn && username) {
+      console.log('Submitting chat message:', chatInput);
+      ws.current.send(JSON.stringify({
+        type: 'chat_message', 
+        content: chatInput, 
+        username: username
+      }));
+      setChatInput('');
+    }
   }
 
   useEffect(() => {
@@ -153,59 +171,60 @@ function App() {
       </div>
       <div className="camera-and-chat-container">
         <div className="overall-camera-container">
-          <div className="connected-users-title-container">
-            <h3 className='connected-users-title'>Connected Users ({onlineUsers.filter(user => user !== username).length})</h3>
-          </div>
-          <div className='other-cameras-container'>
-            {allReceivedData
-              .filter(item => item.username !== username)
-              .map((item) => (
-                <Camera_Component
-                  key={item.username}
-                  allReceivedData={allReceivedData}
-                  specific_username={item.username}
-                />
-              ))
-            }
-          </div>
-          <div className='camera-container'>
-            {canDisplayCamera && (
-              <div className='camera-wrapper'>
-                <Webcam
-                  ref={cameraRef}
-                  audio={true}
-                  height={300}
-                  width={300}
-                  screenshotFormat="image/jpeg"
-                  videoConstraints={{
-                    facingMode: cameraSide,
-                    width: 300,
-                    height: 300,
-                  }}
-                  audioConstraints={{
-                    echoCancellation: true,
-                    noiseSuppression: true,
-                    sampleRate: 44100,
-                  }}
-                />
+          <h3 className='connected-users-title'>Connected Users ({onlineUsers.length})</h3>
+          <div className="all-cameras-container">
+            <div className='other-cameras-container'>
+              {allReceivedData
+                .filter(item => item.username !== username)
+                .map((item) => (
+                  <Camera_Component
+                    key={item.username}
+                    allReceivedData={allReceivedData}
+                    specific_username={item.username}
+                  />
+                ))
+              }
+            </div>
+            <div className='camera-container'>
+              {canDisplayCamera && (
+                <div className='camera-wrapper'>
+                  <Webcam
+                    ref={cameraRef}
+                    audio={true}
+                    height={300}
+                    width={300}
+                    style={{objectFit: 'cover'}}
+                    screenshotFormat="image/jpeg"
+                    videoConstraints={{
+                      facingMode: cameraSide,
+                      width: 300,
+                      height: 300,
+                    }}
+                    audioConstraints={{
+                      echoCancellation: true,
+                      noiseSuppression: true,
+                      sampleRate: 44100,
+                    }}
+                  />
+                </div>
+              )}
+              <div className="camera-controls">
+                <button disabled={!loggedIn} onClick={() => setCanDisplayCamera(!canDisplayCamera)} className="allow-disallow-camera-button">
+                  {canDisplayCamera ? 'Disable' : 'Enable'} Camera
+                </button>
+                <button disabled={!loggedIn} onClick={() => setCameraSide(cameraSide === 'user' ? 'environment' : 'user')} className="change-camera-side">
+                  Switch Camera
+                </button>
               </div>
-            )}
-            <div className="camera-controls">
-              <button disabled={!loggedIn} onClick={() => setCanDisplayCamera(!canDisplayCamera)} className="allow-disallow-camera-button">
-                {canDisplayCamera ? 'Disable' : 'Enable'} Camera
-              </button>
-              <button disabled={!loggedIn} onClick={() => setCameraSide(cameraSide === 'user' ? 'environment' : 'user')} className="change-camera-side">
-                Switch Camera
-              </button>
             </div>
           </div>
         </div>
         <div className="chat-container">
           <h3 className='chat-title'>Chat</h3>
-          <textarea rows={20} disabled={true} className="textarea-messages" />
+          <textarea value={chatMessages.join('\n')} rows={20} disabled={true} className="textarea-messages" />
           <div className="submit-message-container">
-            <input placeholder='Type your message...' type="text" className="input-message" />
-            <button className="submit-message">Submit</button>
+            <input value={chatInput} onChange={e => setChatInput(e.target.value)} placeholder='Type your message...' type="text" className="input-message" />
+            <button onClick={() => submitChatMessage()} className="submit-message">Submit</button>
           </div>
         </div>
       </div>

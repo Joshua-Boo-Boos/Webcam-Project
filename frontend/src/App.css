@@ -52,10 +52,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  overflow-y: auto;
+  justify-content: center;
   max-height: 100%;
-  padding: 10px;
   box-sizing: border-box;
   scrollbar-width: thin;
   scrollbar-color: rgb(200,200,200) rgb(60,60,60);
@@ -78,6 +76,13 @@
 
 .overall-camera-container::-webkit-scrollbar-thumb:hover {
   background: rgb(220,220,220);
+}
+
+.all-cameras-container {
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  width: 100%;
 }
 
 .chat-container {
@@ -121,10 +126,6 @@
   text-align: center;
 }
 
-.connected-users-title {
-  /* margin-bottom: 48%; */
-}
-
 .camera-container {
   display: flex;
   flex-direction: column;
@@ -134,10 +135,22 @@
   padding: 10px 0;
 }
 
+.camera-container * {
+  margin: 10px;
+}
+
 .camera-container > .camera-wrapper {
-  margin: 10px 0;
   width: 100%;
   max-width: 300px;
+}
+
+.camera-wrapper video {
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  border-radius: 5px;
+  display: block;
+  margin: 0px;
 }
 
 .camera-wrapper, .no-camera {
@@ -149,22 +162,12 @@
 .camera-wrapper {
   border: 3px solid rgb(200,200,200);
   border-radius: 10px;
-  padding: 10px;
   background-color: rgb(40,40,40);
   transition: transform 0.2s ease;
 }
 
 .camera-wrapper:hover {
   transform: scale(1.02);
-}
-
-.camera-wrapper img {
-  width: 100%;
-  height: auto;
-  max-height: 200px;
-  object-fit: cover;
-  border-radius: 5px;
-  display: block;
 }
 
 .no-camera {
@@ -190,10 +193,9 @@
   flex-direction: row;
   justify-content: center;
   align-items: center;
-}
-
-.camera-controls * {
-  margin: auto 20px;
+  width: 100%;
+  height: 100%;
+  margin-top: auto;
 }
 
 .other-cameras-container {
@@ -203,6 +205,8 @@
 
 .other-cameras-container {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
+  height: fit-content;
+  width: 100%;
 }

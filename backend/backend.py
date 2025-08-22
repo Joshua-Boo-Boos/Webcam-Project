@@ -45,6 +45,13 @@ class ConnectionManager:
             except:
                 self.disconnect(username)
 
+    async def send_message_all(self, message_to_send):
+        for username, websocket in self.active_connections.items():
+            try:
+                await websocket.send_text(message_to_send)
+            except:
+                self.disconnect(username)
+
     async def send_message_all_except(self, sender_username, message_to_send):
         for username, websocket in self.active_connections.items():
             if username != sender_username:
@@ -88,6 +95,16 @@ async def websocket_endpoint(websocket: WebSocket, username: str):
                         json.dumps({
                             'type': 'online_users', 
                             'users': list(manager.active_connections.keys())
+                        })
+                    )
+
+                elif message.get('type') == 'chat_message':
+                    print(f'User {username} sent a chat message: {message['content']}')
+                    await manager.send_message_all(
+                        json.dumps({
+                            'type': 'chat_message',
+                            'content': message['content'],
+                            'username': username
                         })
                     )
                     
